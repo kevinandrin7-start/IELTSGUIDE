@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f1f1ee;
+  --line: #e4e4df;
+  --ink: #1b1b1f;
+  --muted: #6b6b73;
+  --accent: #0f766e;
+  --accent-ink: #ffffff;
+  --accent-soft: #e6f4f2;
+  --good: #15803d;
+  --good-soft: #e8f6ec;
+  --bad: #c2410c;
+  --bad-soft: #fdeee6;
+  --warn: #b45309;
+  --warn-soft: #fdf3e2;
+  --rose-soft: #fde7e4;
+  --green-soft: #e3f3dc;
+  --amber-soft: #fbf0d5;
+  --slate-soft: #eceef1;
+  --teal-soft: #dcefed;
+  --mark: #fde68a;
+}
+
+.dark {
+  --bg: #0e0f12;
+  --surface: #16171b;
+  --surface-2: #1d1f24;
+  --line: #2a2c33;
+  --ink: #ececef;
+  --muted: #9a9aa5;
+  --accent: #2dd4bf;
+  --accent-ink: #062b27;
+  --accent-soft: #0f2e2b;
+  --good: #4ade80;
+  --good-soft: #13281b;
+  --bad: #fb923c;
+  --bad-soft: #2e1b10;
+  --warn: #fbbf24;
+  --warn-soft: #2b2310;
+  --rose-soft: #2d1a1c;
+  --green-soft: #18261a;
+  --amber-soft: #2a2412;
+  --slate-soft: #22252c;
+  --teal-soft: #11292a;
+  --mark: #7c6514;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+mark.hl {
+  background: var(--mark);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+mark.hl.note {
+  border-bottom: 2px dotted var(--accent);
+}
+
+.exam-ui {
+  /* Authentic computer-delivered test look */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.prose-lesson p,
+.prose-lesson li {
+  line-height: 1.65;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 8px;
+}
+
+@media print {
+  nav,
+  .no-print {
+    display: none !important;
+  }
+}

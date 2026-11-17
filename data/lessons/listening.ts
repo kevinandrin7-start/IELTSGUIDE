@@ -1,0 +1,138 @@
+import type { Lesson } from "@/lib/types";
+
+export const listeningLessons: Lesson[] = [
+  {
+    id: "l-format",
+    skill: "listening",
+    title: "The Listening test at a glance",
+    summary: "Four parts, 40 questions, ~30 minutes. On computer you get 2 minutes' review at the end, not 10 minutes' transfer time.",
+    minutes: 6,
+    level: "core",
+    blocks: [
+      { kind: "table", head: ["Part", "Situation", "Speakers", "Typical tasks"], rows: [
+        ["1", "Everyday transaction (booking, enquiry, enrolment)", "2", "Form / note completion — names, numbers, dates"],
+        ["2", "Everyday monologue (tour, radio talk, induction)", "1 (sometimes 2)", "MCQ, map/plan labelling, matching"],
+        ["3", "Training or workplace discussion", "2–4", "MCQ, matching opinions, choose TWO"],
+        ["4", "Talk on a general-interest or academic topic", "1", "Note / summary completion (usually ONE WORD)"],
+      ]},
+      { kind: "p", text: "The recording is played once only. Questions follow the order of the audio. Since mid-2026 IELTS is delivered on computer in almost every market, so you type answers directly and have 2 minutes at the end to check them." },
+      { kind: "tip", tone: "clb9", title: "Your CLB 9 target", text: "Listening is the toughest CLB 9 requirement: 8.0 means roughly 35–36 correct out of 40. You can only afford 4–5 mistakes in the whole test, so Part 1 and 2 must be near-perfect." },
+      { kind: "list", items: [
+        "Spelling counts. 'Wenesday' is wrong.",
+        "Word limits are strict: 'NO MORE THAN TWO WORDS' means a three-word answer is marked wrong even if it contains the right words.",
+        "Numbers can be written as digits (8) or words (eight) — digits are faster and safer.",
+        "Both British and American spellings are accepted, but be consistent.",
+      ]},
+    ],
+  },
+  {
+    id: "l-prediction",
+    skill: "listening",
+    title: "Prediction: what to do before the audio starts",
+    summary: "Use the 20–30 seconds of reading time to predict the TYPE of word in every gap.",
+    minutes: 8,
+    level: "core",
+    blocks: [
+      { kind: "p", text: "Strong listeners are not faster listeners — they simply know what they are listening for. Before each section, the narrator gives you time to read. Use it to predict the grammar and meaning of each answer." },
+      { kind: "steps", items: [
+        { title: "Underline the keyword", text: "Find the word in each question most likely to be paraphrased: 'Fee after discount: £____' → listen for money and 'discount / reduction / off'." },
+        { title: "Predict the word type", text: "Noun? Plural noun? Number? Date? Adjective? A gap after 'a' or 'an' is a singular noun; after 'some' or 'several' probably plural." },
+        { title: "Predict synonyms", text: "'Must bring' might be heard as 'you'll need', 'please make sure you have', 'everyone is asked to bring'." },
+        { title: "Mark the 'anchor' for the next question", text: "Read one question ahead so if you miss an answer you can jump forward instead of panicking." },
+      ]},
+      { kind: "table", head: ["Gap clue", "Predict"], rows: [
+        ["Postcode: ____", "Letters + numbers, spelled out"],
+        ["Cost: £____", "Number — watch for discounts and corrections"],
+        ["Day: ____", "Weekday — watch for 'actually, no…'"],
+        ["Bring a ____", "Singular countable noun"],
+        ["Fewer ____ are used", "Plural noun"],
+        ["hives must be ____ regularly", "Past participle (passive): inspected, cleaned, checked"],
+      ]},
+      { kind: "tip", title: "Computer-delivered tip", text: "On screen you can highlight question words. Highlight the keyword and the word type you predicted — it keeps your eyes focused while you listen." },
+    ],
+  },
+  {
+    id: "l-distractors",
+    skill: "listening",
+    title: "Distractor traps and signposting",
+    summary: "The first answer you hear is often wrong. Learn the five distractor patterns and the signpost words that rescue you.",
+    minutes: 10,
+    level: "clb9",
+    blocks: [
+      { kind: "p", text: "IELTS deliberately mentions several possible answers. Band 6 listeners write the first one they hear; Band 8 listeners wait for the speaker to confirm." },
+      { kind: "table", head: ["Trap", "What it sounds like", "Example from Mock Test 1"], rows: [
+        ["Self-correction", "\"Tuesday… oh, actually no, Thursday.\"", "Q6 Day: Thursday"],
+        ["Old vs new information", "\"It used to be ten weeks, but now it's eight.\"", "Q7 / Q20"],
+        ["Offer rejected", "\"What about the website?\" \"No, I saw it in the paper.\"", "Q10"],
+        ["Two numbers", "Work number given first, then the mobile", "Q4"],
+        ["'Many people think… but in fact'", "A popular belief followed by the truth", "Q11, Q14"],
+      ]},
+      { kind: "h", text: "Signpost words that tell you an answer is coming" },
+      { kind: "list", items: [
+        "Contrast (answer is about to change): but, however, actually, in fact, although, to be honest, that's not quite right",
+        "Sequence (move to next question): first of all, moving on, next, another thing, finally",
+        "Emphasis (answer is here): the main reason, what really matters, the most important, crucially, above all",
+        "Example (often NOT the answer): for instance, such as, like",
+      ]},
+      { kind: "tip", tone: "warn", title: "Never write the first number you hear", text: "In Part 1 prices, times and dates are almost always changed once. Write the first one lightly in your head, then wait for the final version." },
+    ],
+  },
+  {
+    id: "l-spelling",
+    skill: "listening",
+    title: "Spelling, plurals and numbers: zero-mistake rules",
+    summary: "Easy marks lost in Part 1 are the main reason people score 7.5 instead of 8.0.",
+    minutes: 7,
+    level: "core",
+    blocks: [
+      { kind: "checklist", groups: [
+        { title: "Spelling", items: ["Learn the alphabet sounds that get confused: A/E/I, G/J, M/N, B/V/P", "'Double N' = NN; 'triple' is rare but possible", "Capitalise names, days, months — not required but avoids ambiguity", "Common traps: accommodation, necessary, Wednesday, February, environment, government"] },
+        { title: "Plurals", items: ["If the speaker says the plural, write the plural", "'Fewer ____ are used' → the gap needs a plural noun", "Check plurals in the 2-minute review — a missing 's' is wrong"] },
+        { title: "Numbers & times", items: ["'Double seven' = 77; 'oh' = 0", "Thirteen vs thirty: stress is on the END in 13 (thir-TEEN), START in 30 (THIR-ty)", "Times: 7.30, 7:30 and half past seven are all accepted", "Money: don't write the currency symbol if it's already in the question"] },
+      ]},
+      { kind: "example", title: "Practice: hear the difference", text: "fifteen / fifty · sixteen / sixty · seventeen / seventy · eighteen / eighty", note: "Use the speaker button in the Drills section to hear each pair." },
+    ],
+  },
+  {
+    id: "l-tracking",
+    skill: "listening",
+    title: "Maps, multi-speaker tracking and 'choose TWO'",
+    summary: "Parts 2 and 3 strategies for following directions and who-said-what.",
+    minutes: 10,
+    level: "clb9",
+    blocks: [
+      { kind: "h", text: "Map and plan labelling" },
+      { kind: "steps", items: [
+        { title: "Find your starting point", text: "Usually the entrance or 'you are here'. Orient yourself: north is normally at the top." },
+        { title: "Learn the direction language", text: "immediately on your right · opposite · beyond · at the far end · in the corner · between X and Y · alongside · just past" },
+        { title: "Follow the speaker's route", text: "The questions are in order of the route, so each answer is near the previous one." },
+      ]},
+      { kind: "h", text: "Part 3: tracking agreement" },
+      { kind: "p", text: "In MCQ with two speakers, the answer is usually what they finally AGREE on, not what one person first suggests. Listen for: 'That's a good idea', 'Let's do that', 'I'm not sure about that', 'Hmm, the problem is…'." },
+      { kind: "h", text: "'Choose TWO' questions" },
+      { kind: "list", items: ["Expect all five options to be mentioned — three will be rejected.", "Tick options as you hear them confirmed; cross out ones rejected.", "Order doesn't matter: A and D = D and A."] },
+      { kind: "tip", tone: "clb9", text: "Part 3 is where most 7.5 candidates lose their 8.0. Practise Mock Test 1 Part 3 in Practice mode with the transcript ON, pausing after each agreement phrase." },
+    ],
+  },
+  {
+    id: "l-jump",
+    skill: "listening",
+    title: "The 7.0 → 8.0 jump: a CLB 9 action plan",
+    summary: "A 4-week routine that moves you from 30 to 35+ correct answers.",
+    minutes: 6,
+    level: "clb9",
+    blocks: [
+      { kind: "table", head: ["Week", "Focus", "Daily practice (30–40 min)"], rows: [
+        ["1", "Part 1 accuracy", "One Part 1 + spelling drill; aim for 10/10 every time"],
+        ["2", "Distractors", "One Part 2 + Part 3, write the distractor next to each answer when reviewing"],
+        ["3", "Part 4 stamina", "One Part 4 at 1.1× speed, then at normal speed"],
+        ["4", "Full tests", "Two full Listening tests in Exam mode; error log after each"],
+      ]},
+      { kind: "list", items: [
+        "Review every mistake with the transcript — find the exact line and the trap.",
+        "Log the question TYPE you missed in the Error Log; your heatmap shows patterns.",
+        "Shadowing: replay one Part 4 paragraph and repeat it aloud 1 second behind the speaker. This builds the processing speed needed for 8.0.",
+      ]},
+    ],
+  },
+];
