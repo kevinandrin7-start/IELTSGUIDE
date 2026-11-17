@@ -169,18 +169,41 @@ export interface AiGrade {
   errors: { error: string; correction: string }[];
 }
 
-/** Calls the optional /api/grade route. Returns null if AI grading isn't configured. */
+const KEY_STORE = "clb9-anthropic-key";
+
+/** The learner's own API key, kept only in this browser (used on static hosting). */
+export function getUserApiKey(): string {
+  try { return localStorage.getItem(KEY_STORE) ?? ""; } catch { return ""; }
+}
+export function setUserApiKey(key: string) {
+  try { if (key) localStorage.setItem(KEY_STORE, key); else localStorage.removeItem(KEY_STORE); } catch { /* storage blocked */ }
+}
+
+/**
+ * Grades with AI. Uses the learner's own key directly from the browser when one is saved,
+ * otherwise the server's /api/grade route (only present on server deployments).
+ */
 export async function gradeWithAI(kind: "writing" | "speaking", prompt: string): Promise<AiGrade | { error: string }> {
+  const key = getUserApiKey();
+  if (key) {
+    const [{ default: Anthropic }, { runGrade }] = await Promise.all([import("@anthropic-ai/sdk"), import("./aiGrade")]);
+    const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
+    const res = await runGrade(Anthropic, client, prompt, kind);
+    return "status" in res ? { error: res.error } : res;
+  }
   try {
-    const res = await fetch("/api/grade", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/grade`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind, prompt }),
     });
+    if (!res.ok && res.headers.get("content-type")?.includes("application/json") !== true) {
+      return { error: "AI marking needs an Anthropic API key. Add yours below." };
+    }
     const data = await res.json();
     if (!res.ok) return { error: data.error || `AI grading unavailable (${res.status})` };
     return data as AiGrade;
   } catch {
-    return { error: "AI grading endpoint not reachable (offline or static build)." };
+    return { error: "AI marking needs an Anthropic API key. Add yours below." };
   }
 }

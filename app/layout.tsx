@@ -5,8 +5,8 @@ import { ServiceWorker } from "@/components/ServiceWorker";
 export const metadata: Metadata = {
   title: "CLB 9 Coach — IELTS General Training",
   description: "Lessons, drills, vocabulary and full computer-delivered mock tests for IELTS General Training, built around the CLB 9 targets (L 8.0 · R 7.0 · W 7.0 · S 7.0).",
-  manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.svg", apple: "/icon-192.png" },
+  manifest: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/manifest.webmanifest`,
+  icons: { icon: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon.svg`, apple: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon-192.png` },
 };
 
 export const viewport: Viewport = {

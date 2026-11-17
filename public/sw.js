@@ -1,7 +1,10 @@
 // Offline-first service worker: caches pages and static assets as they are
 // visited, so lessons, drills and mock tests keep working without a connection.
-const CACHE = "clb9-v1";
-const PRECACHE = ["/", "/learn", "/drills", "/vocab", "/mock", "/cheatsheets", "/planner", "/progress", "/manifest.webmanifest", "/icon.svg"];
+const CACHE = "clb9-v2";
+// Paths are relative to the worker's scope, so this also works under a sub-path (GitHub Pages).
+const SCOPE = new URL(self.registration ? self.registration.scope : self.location.href);
+const at = (p) => new URL(p, SCOPE).href;
+const PRECACHE = ["./", "learn/", "drills/", "vocab/", "mock/", "cheatsheets/", "planner/", "progress/", "manifest.webmanifest", "icon.svg"].map(at);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE).catch(() => {})));
@@ -18,7 +21,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
-  if (new URL(req.url).pathname.startsWith("/api/")) return;
+  if (new URL(req.url).pathname.includes("/api/")) return;
 
   // Network first for pages (fresh content), cache fallback offline.
   if (req.mode === "navigate") {
@@ -29,7 +32,7 @@ self.addEventListener("fetch", (event) => {
           caches.open(CACHE).then((c) => c.put(req, copy));
           return res;
         })
-        .catch(() => caches.match(req).then((r) => r || caches.match("/"))),
+        .catch(() => caches.match(req).then((r) => r || caches.match(at("./")))),
     );
     return;
   }

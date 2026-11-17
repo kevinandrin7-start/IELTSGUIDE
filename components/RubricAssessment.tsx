@@ -1,7 +1,7 @@
 "use client";
-import { Copy, Save, Sparkles } from "lucide-react";
-import { useState } from "react";
-import { type AiGrade, type Criterion, gradeWithAI } from "@/lib/ai";
+import { Copy, KeyRound, Save, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { type AiGrade, type Criterion, getUserApiKey, gradeWithAI, setUserApiKey } from "@/lib/ai";
 import { overallBand } from "@/lib/scoring";
 import { Badge, Button, cn } from "./ui";
 
@@ -23,6 +23,9 @@ export function RubricAssessment({
   const [ai, setAi] = useState<AiGrade | null>(null);
   const [aiErr, setAiErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [keyInput, setKeyInput] = useState("");
+  const [hasKey, setHasKey] = useState(false);
+  useEffect(() => setHasKey(!!getUserApiKey()), []);
   const overall = overallBand(Object.values(scores));
 
   const runAI = async () => {
@@ -90,7 +93,19 @@ export function RubricAssessment({
           <Button onClick={() => onSave(scores, overall)} disabled={saved}><Save size={15} /> {saved ? "Saved" : "Save score"}</Button>
         </div>
       </div>
-      {aiErr && <p className="text-sm text-warn">{aiErr} You can paste the copied prompt into any AI assistant instead.</p>}
+      {aiErr && <p className="text-sm text-warn">{aiErr} You can also paste the copied prompt into any AI assistant.</p>}
+
+      <details className="rounded-xl border border-line p-3 text-sm" open={!!aiErr && !hasKey}>
+        <summary className="flex cursor-pointer items-center gap-2 font-medium"><KeyRound size={15} /> AI marking key {hasKey ? <Badge tone="good">saved on this device</Badge> : <span className="text-xs font-normal text-muted">(optional)</span>}</summary>
+        <p className="mt-2 text-xs text-muted">
+          Paste an Anthropic API key from console.anthropic.com to use “Grade with AI”. It is stored only in this browser and sent only to Anthropic. Each grading uses a small amount of API credit.
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <input type="password" autoComplete="off" value={keyInput} onChange={(e) => setKeyInput(e.target.value)} placeholder={hasKey ? "••••••••  (replace key)" : "sk-ant-…"} className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-3 py-1.5" aria-label="Anthropic API key" />
+          <Button variant="secondary" onClick={() => { setUserApiKey(keyInput.trim()); setHasKey(!!keyInput.trim()); setKeyInput(""); setAiErr(null); }} disabled={!keyInput.trim()}>Save key</Button>
+          {hasKey && <Button variant="ghost" onClick={() => { setUserApiKey(""); setHasKey(false); }}>Remove</Button>}
+        </div>
+      </details>
 
       {ai && (
         <div className="space-y-3 rounded-xl border border-accent/40 bg-accent-soft p-4 text-sm">

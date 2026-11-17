@@ -37,6 +37,18 @@ Listening audio is generated in the browser with the Web Speech API, using diffe
 
 Copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`. The Writing and Speaking result screens then show an **AI marking** button that returns band scores per criterion with feedback (`app/api/grade/route.ts`). Without a key, the app offers a ready-made marking prompt you can paste into any assistant.
 
+### Publishing on GitHub Pages
+
+`.github/workflows/pages.yml` builds a static version of the app and deploys it on every push to `main`.
+One-time setup: in the repository go to **Settings → Pages → Build and deployment → Source** and pick **GitHub Actions**.
+The site is then served at `https://<user>.github.io/<repo>/`. To build the same static site locally:
+
+```bash
+STATIC_EXPORT=1 BASE_PATH=/IELTSGUIDE npm run build   # output in ./out (remove app/api first, as the workflow does)
+```
+
+GitHub Pages has no server, so on the hosted site AI marking uses the learner's own Anthropic API key, pasted into the "AI marking key" box on the Writing or Speaking results screen. The key is kept only in that browser.
+
 ## Project structure
 
 ```
