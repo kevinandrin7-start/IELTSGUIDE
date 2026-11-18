@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAccount } from "@/lib/account";
+import { Logo, LogoMark } from "./Logo";
 import { cn } from "./ui";
 
 const NAV = [
@@ -62,12 +63,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh lg:flex">
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-line bg-surface px-3 py-5 lg:flex">
-        <Link href="/" className="mb-6 flex items-center gap-2 px-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-sm font-bold text-accent-ink">C9</span>
-          <span>
-            <span className="block text-sm font-semibold leading-tight">CLB 9 Coach</span>
-            <span className="block text-xs text-muted">IELTS General Training</span>
-          </span>
+        <Link href="/" className="mb-6 px-2">
+          <Logo />
         </Link>
         <nav className="flex flex-1 flex-col gap-0.5">
           {NAV.map(({ href, label, icon: Icon }) => (
@@ -93,7 +90,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Mobile top bar */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-surface/90 px-4 py-3 backdrop-blur lg:hidden">
         <Link href="/" className="flex items-center gap-2">
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-accent text-xs font-bold text-accent-ink">C9</span>
+          <LogoMark size={28} />
           <span className="text-sm font-semibold">CLB 9 Coach</span>
         </Link>
         <div className="flex items-center gap-1">
