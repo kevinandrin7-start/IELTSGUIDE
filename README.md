@@ -51,7 +51,7 @@ GitHub Pages has no server, so on the hosted site AI marking uses the learner's 
 
 ### Accounts (Firebase)
 
-People can create an account (email + password), sign in on any device, reset a forgotten password, and manage a **Profile** with their name and their own Anthropic API key for AI marking. Progress (study plan, results, error log, flashcards, completed lessons) syncs to the account automatically; signing out clears it from the device.
+The whole app sits behind a sign-in screen. People can create an account (email + password), sign in on any device, reset a forgotten password, and manage a **Profile** with their name and their own Anthropic API key for AI marking. Progress (study plan, results, error log, flashcards, completed lessons) syncs to the account automatically; signing out clears it from the device.
 
 Setup (free Spark plan is enough):
 

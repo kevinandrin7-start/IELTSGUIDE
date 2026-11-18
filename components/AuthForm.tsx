@@ -7,7 +7,7 @@ import { useAccount } from "@/lib/account";
 import { authMessage } from "@/lib/firebase";
 import { Button, Card } from "./ui";
 
-const input = "mt-1 block w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink";
+const input = "mt-1.5 block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/15";
 
 export function AccountsOff() {
   return (
@@ -71,14 +71,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   };
 
   return (
-    <Card className="mx-auto max-w-md">
-      <h1 className="text-xl font-semibold">{mode === "signup" ? "Create your account" : "Sign in"}</h1>
-      <p className="mt-1 text-sm text-muted">
+    <div>
+      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{mode === "signup" ? "Create your account" : "Welcome back"}</h1>
+      <p className="mt-2 text-sm text-muted">
         {mode === "signup"
           ? "Your study plan, scores, error log and flashcards are saved to your account, so they follow you to any device."
-          : "Welcome back. Your progress loads automatically."}
+          : "Sign in to continue. Your study plan and progress load automatically."}
       </p>
-      <form onSubmit={submit} className="mt-5 space-y-3">
+      <form onSubmit={submit} className="mt-7 space-y-4">
         {mode === "signup" && (
           <label className="block text-sm">Name
             <input className={input} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required />
@@ -97,12 +97,12 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         )}
         {error && <p role="alert" className="rounded-lg bg-bad-soft px-3 py-2 text-sm text-bad">{error}</p>}
         {info && <p className="rounded-lg bg-good-soft px-3 py-2 text-sm text-good">{info}</p>}
-        <Button type="submit" className="w-full" disabled={busy}>
+        <Button type="submit" className="w-full py-3 text-[15px] shadow-sm shadow-accent/20" disabled={busy}>
           {mode === "signup" ? <UserPlus size={16} /> : <LogIn size={16} />}
           {busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
         </Button>
       </form>
-      <div className="mt-4 flex flex-wrap justify-between gap-2 text-sm">
+      <div className="mt-5 flex flex-wrap justify-between gap-2 text-sm">
         {mode === "login" ? (
           <>
             <button type="button" onClick={forgot} className="text-accent hover:underline">Forgot password?</button>
@@ -112,6 +112,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           <Link href="/login" className="text-accent hover:underline">Already have an account? Sign in</Link>
         )}
       </div>
-    </Card>
+      <p className="mt-10 text-xs text-muted">Not affiliated with IELTS, IDP, the British Council or Cambridge. All practice material is original.</p>
+    </div>
   );
 }
