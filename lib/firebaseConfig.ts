@@ -4,10 +4,10 @@
 // NEXT_PUBLIC_FIREBASE_CONFIG (a JSON string) overrides this at build time.
 
 export const FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
+  apiKey: "AIzaSyC32zE3--kIBbptNMryhVwJDrAy0oYoJcs",
+  authDomain: "ielts-clb9.firebaseapp.com",
+  projectId: "ielts-clb9",
+  storageBucket: "ielts-clb9.firebasestorage.app",
+  messagingSenderId: "311610546110",
+  appId: "1:311610546110:web:65723c541e3222c9ad4bef",
 };
