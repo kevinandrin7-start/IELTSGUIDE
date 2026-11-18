@@ -117,12 +117,12 @@ mark.hl.note {
   }
 }
 
-/* Login artwork: gentle floating skill cards */
-@keyframes auth-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+/* Login artwork: scene name chip fades in on each slide */
+@keyframes auth-chip {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
 }
-.auth-float { animation: auth-float 6s ease-in-out infinite; }
+.auth-chip { animation: auth-chip 600ms ease-out both; }
 @media (prefers-reduced-motion: reduce) {
-  .auth-float { animation: none; }
+  .auth-chip { animation: none; }
 }
