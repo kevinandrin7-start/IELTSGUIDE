@@ -49,6 +49,19 @@ STATIC_EXPORT=1 BASE_PATH=/IELTSGUIDE npm run build   # output in ./out (remove 
 
 GitHub Pages has no server, so on the hosted site AI marking uses the learner's own Anthropic API key, pasted into the "AI marking key" box on the Writing or Speaking results screen. The key is kept only in that browser.
 
+### Accounts (Firebase)
+
+People can create an account (email + password), sign in on any device, reset a forgotten password, and manage a **Profile** with their name and their own Anthropic API key for AI marking. Progress (study plan, results, error log, flashcards, completed lessons) syncs to the account automatically; signing out clears it from the device.
+
+Setup (free Spark plan is enough):
+
+1. Create a Firebase project, then **Authentication → Sign-in method → Email/Password** (enable) and **Authentication → Settings → Authorized domains** (add your Pages domain, e.g. `<user>.github.io`).
+2. **Firestore Database → Create database** (production mode), then **Rules**: paste the contents of `firestore.rules` and **Publish**. These rules let each person read and write only their own `users/{uid}` data, including their API key.
+3. **Project settings → Your apps → Web app**: copy the `firebaseConfig` values into `lib/firebaseConfig.ts` (they identify the project and are safe to commit).
+
+With an empty `apiKey` in that file the app runs without accounts and keeps progress on the device.
+To test locally against the Firebase emulators: `npx firebase emulators:start --only auth,firestore --project demo-clb9` and build with `NEXT_PUBLIC_FIREBASE_EMULATOR=1`.
+
 ## Project structure
 
 ```
@@ -67,6 +80,8 @@ lib/
   scoring.ts         raw → band tables, CLB table, answer matching
   grade.ts           marking of question groups, error-log entries
   storage.ts         localStorage store (useSyncExternalStore) + IndexedDB recordings
+  account.tsx        Firebase accounts: sign-up/in/out, profile, API key, progress sync
+  firebase.ts, firebaseConfig.ts
   plan.ts            diagnostic and roadmap generator
   srs.ts, tts.ts, hooks.ts, analytics.ts, ai.ts
 public/              PWA manifest, icons, service worker (offline after first visit)

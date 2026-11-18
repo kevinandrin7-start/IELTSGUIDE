@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3, BookOpen, CalendarDays, ClipboardCheck, FileText, Layers, LayoutDashboard, Moon, Sun, Zap,
+  BarChart3, BookOpen, CalendarDays, ClipboardCheck, FileText, Layers, LayoutDashboard, LogIn, Moon, Sun, UserRound, Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAccount } from "@/lib/account";
 import { cn } from "./ui";
 
 const NAV = [
@@ -37,6 +38,23 @@ export function ThemeToggle({ className }: { className?: string }) {
   );
 }
 
+/** Sign-in link or the signed-in person's name, linking to their profile. */
+function AccountLink({ compact }: { compact?: boolean }) {
+  const { enabled, loading, user, profile } = useAccount();
+  if (!enabled || loading) return null;
+  const href = user ? "/profile" : "/login";
+  const label = user ? profile?.displayName || user.email || "Profile" : "Sign in";
+  const Icon = user ? UserRound : LogIn;
+  if (compact) {
+    return <Link href={href} className="rounded-lg p-2 text-muted hover:bg-surface2" aria-label={user ? "Profile" : "Sign in"}><Icon size={18} /></Link>;
+  }
+  return (
+    <Link href={href} className="mb-2 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-surface2 hover:text-ink">
+      <Icon size={17} /> <span className="truncate">{label}</span>
+    </Link>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
@@ -65,6 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </nav>
+        <AccountLink />
         <div className="flex items-center justify-between border-t border-line px-2 pt-3 text-xs text-muted">
           <span>L 8 · R 7 · W 7 · S 7</span>
           <ThemeToggle />
@@ -81,6 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/vocab" className="rounded-lg p-2 text-muted hover:bg-surface2" aria-label="Lexical bank"><Layers size={18} /></Link>
           <Link href="/planner" className="rounded-lg p-2 text-muted hover:bg-surface2" aria-label="Study plan"><CalendarDays size={18} /></Link>
           <Link href="/cheatsheets" className="rounded-lg p-2 text-muted hover:bg-surface2" aria-label="Cheat sheets"><FileText size={18} /></Link>
+          <AccountLink compact />
           <ThemeToggle />
         </div>
       </header>

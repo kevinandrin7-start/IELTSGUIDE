@@ -1,6 +1,8 @@
 "use client";
 import { Copy, KeyRound, Save, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAccount } from "@/lib/account";
 import { type AiGrade, type Criterion, getUserApiKey, gradeWithAI, setUserApiKey } from "@/lib/ai";
 import { overallBand } from "@/lib/scoring";
 import { Badge, Button, cn } from "./ui";
@@ -25,6 +27,7 @@ export function RubricAssessment({
   const [loading, setLoading] = useState(false);
   const [keyInput, setKeyInput] = useState("");
   const [hasKey, setHasKey] = useState(false);
+  const acct = useAccount();
   useEffect(() => setHasKey(!!getUserApiKey()), []);
   const overall = overallBand(Object.values(scores));
 
@@ -98,7 +101,12 @@ export function RubricAssessment({
       <details className="rounded-xl border border-line p-3 text-sm" open={!!aiErr && !hasKey}>
         <summary className="flex cursor-pointer items-center gap-2 font-medium"><KeyRound size={15} /> AI marking key {hasKey ? <Badge tone="good">saved on this device</Badge> : <span className="text-xs font-normal text-muted">(optional)</span>}</summary>
         <p className="mt-2 text-xs text-muted">
-          Paste an Anthropic API key from console.anthropic.com to use “Grade with AI”. It is stored only in this browser and sent only to Anthropic. Each grading uses a small amount of API credit.
+          {acct.user ? (
+            <>{hasKey ? "Your key is saved to your account." : "A key you save here is stored in your account."} You can also manage it on your <Link href="/profile" className="text-accent underline">Profile</Link> page.</>
+          ) : (
+            <>Paste an Anthropic API key from console.anthropic.com to use “Grade with AI”. It is stored only in this browser and sent only to Anthropic.{acct.enabled && <> <Link href="/signup" className="text-accent underline">Create an account</Link> to keep it on every device.</>}</>
+          )}{" "}
+          Each grading uses a small amount of API credit.
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           <input type="password" autoComplete="off" value={keyInput} onChange={(e) => setKeyInput(e.target.value)} placeholder={hasKey ? "••••••••  (replace key)" : "sk-ant-…"} className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-3 py-1.5" aria-label="Anthropic API key" />

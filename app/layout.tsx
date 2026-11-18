@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ServiceWorker } from "@/components/ServiceWorker";
+import { AccountProvider } from "@/lib/account";
 
 export const metadata: Metadata = {
   title: "CLB 9 Coach — IELTS General Training",
@@ -28,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-dvh bg-bg text-ink">
-        {children}
+        <AccountProvider>{children}</AccountProvider>
         <ServiceWorker />
       </body>
     </html>
