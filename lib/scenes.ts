@@ -70,6 +70,13 @@ function pine(x: number, y: number, h: number, color: string, snow?: string) {
   d += `M${f(x - h * 0.03)} ${f(y - h * 0.12)} h${f(h * 0.06)} v${f(h * 0.12)} h${f(-h * 0.06)} Z`;
   return `<path d="${d}" fill="${color}"/>` + (snow ? `<path d="${s}" fill="${snow}"/>` : "");
 }
+/** A bird in flight; its wings flap when the scene is animated. */
+const bird = (x: number, y: number, k: number, color: string, flap: number) =>
+  `<g transform="translate(${f(x)} ${f(y)}) scale(${f(k)})"><g class="fx-flap" style="--d:${f(flap)}s;--dl:-${f(flap * 0.37 * ((x * 7) % 5))}s"><path d="M-10 0 Q-5 -6 0 0 Q5 -6 10 0" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></g></g>`;
+/** A flock that crosses the whole scene from left to right. */
+const flock = (birds: string, d: number, dl: number, from = -260, to = 1000) =>
+  `<g class="fx-fly" style="--d:${d}s;--dl:-${dl}s;--from:${from}px;--to:${to}px">${birds}</g>`;
+
 const shade = (id: string) =>
   `<defs><linearGradient id="${id}-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".72"/></linearGradient></defs><rect y="${H - 320}" width="${W}" height="320" fill="url(#${id}-shade)"/>`;
 
@@ -129,8 +136,24 @@ function aurora() {
     const y = 645 + Math.pow(r(), 1.6) * 250, x = r() * W, w = 20 + r() * 120;
     lake += `<line x1="${f(x)}" y1="${f(y)}" x2="${f(x + w)}" y2="${f(y)}" stroke="#a7f3d0" stroke-width=".8" opacity="${f(0.05 + r() * 0.15)}"/>`;
   }
-  lake += `<g transform="translate(470 760)"><ellipse cx="0" cy="10" rx="110" ry="6" fill="#5eead4" opacity=".08"/><path d="M-70 0 Q0 16 70 0 Q60 8 0 10 Q-60 8 -70 0Z" fill="#010507"/><path d="M-12 0 l4 -22 q4 -6 8 0 l3 22z" fill="#010507"/><circle cx="-6" cy="-28" r="6" fill="#010507"/><line x1="-30" y1="-30" x2="18" y2="16" stroke="#010507" stroke-width="2.5"/><path d="M-70 4 Q0 22 70 4" fill="none" stroke="#99f6e4" stroke-width=".8" opacity=".35"/></g>`;
-  return s0 + stars + `<g clip-path="url(#a-up)">${au}${moon}${mts}</g>${pines}` + lake + shade("a");
+  const canoe = `<g transform="translate(470 760)"><g class="fx-bob" style="--d:5s;--b:2px"><ellipse cx="0" cy="10" rx="110" ry="6" fill="#5eead4" opacity=".08"/><path d="M-70 0 Q0 16 70 0 Q60 8 0 10 Q-60 8 -70 0Z" fill="#010507"/><path d="M-12 0 l4 -22 q4 -6 8 0 l3 22z" fill="#010507"/><circle cx="-6" cy="-28" r="6" fill="#010507"/><line x1="-30" y1="-30" x2="18" y2="16" stroke="#010507" stroke-width="2.5"/><path d="M-70 4 Q0 22 70 4" fill="none" stroke="#99f6e4" stroke-width=".8" opacity=".35"/></g></g>`;
+  // motion: shimmering lights, twinkling stars, a shooting star, ripples and the drifting canoe
+  let fx = `<defs><radialGradient id="afx-glow"><stop offset="0" stop-color="#5eead4" stop-opacity=".55"/><stop offset=".6" stop-color="#34d399" stop-opacity=".18"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/></radialGradient><radialGradient id="afx-glow2"><stop offset="0" stop-color="#c084fc" stop-opacity=".4"/><stop offset="1" stop-color="#c084fc" stop-opacity="0"/></radialGradient></defs>`;
+  ([[220, 230, 260, 90, "afx-glow", 7, 0], [560, 300, 240, 80, "afx-glow2", 9, 3], [430, 190, 300, 70, "afx-glow", 11, 6]] as const).forEach(([x, y, rx, ry, g, d, dl]) => {
+    fx += `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="url(#${g})" class="fx-pulse" style="--d:${d}s;--dl:-${dl}s"/>`;
+  });
+  for (let i = 0; i < 40; i++) {
+    fx += `<circle cx="${f(r() * W)}" cy="${f(r() * 420)}" r="${f(0.9 + r() * 0.9)}" fill="#f0f9ff" class="fx-twinkle" style="--d:${f(2 + r() * 4)}s;--dl:-${f(r() * 6)}s"/>`;
+  }
+  fx += `<g transform="translate(700 70)"><g class="fx-shoot" style="--d:11s;--dl:-3s"><line x1="0" y1="0" x2="60" y2="-24" stroke="url(#afx-tail)" stroke-width="2" stroke-linecap="round"/></g></g>`;
+  fx += `<defs><linearGradient id="afx-tail" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`;
+  for (let i = 0; i < 26; i++) {
+    const y = 650 + Math.pow(r(), 1.4) * 230, x = r() * W, w = 20 + r() * 90;
+    fx += `<g class="fx-drift" style="--d:${f(6 + r() * 6)}s;--dl:-${f(r() * 8)}s;--dx:${f(10 + r() * 20)}px"><line x1="${f(x)}" y1="${f(y)}" x2="${f(x + w)}" y2="${f(y)}" stroke="#a7f3d0" stroke-width=".9" opacity="${f(0.12 + r() * 0.2)}"/></g>`;
+  }
+  [0, 2, 4].forEach((dl) => (fx += `<ellipse cx="470" cy="772" rx="60" ry="5" fill="none" stroke="#99f6e4" stroke-width=".8" class="fx-ripple" style="--d:6s;--dl:-${dl}s"/>`));
+  fx += canoe;
+  return { bg: s0 + stars + `<g clip-path="url(#a-up)">${au}${moon}${mts}</g>${pines}` + lake, fx: fx + shade("a") };
 }
 
 // ── 2. Glacier lake at sunrise ────────────────────────────────────
@@ -206,7 +229,19 @@ function glacier() {
   }
   // a pair of loons
   const loon = (x: number, y: number, k: number) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-14 0 Q0 -8 14 -2 Q8 4 -14 2Z" fill="#0b1320"/><path d="M10 -3 q4 -10 10 -9 l4 2 -6 1 q-2 4 -5 7z" fill="#0b1320"/><line x1="-20" y1="4" x2="22" y2="4" stroke="#ecfeff" stroke-width=".8" opacity=".5"/></g>`;
-  return s + up + near + lake + rocks + loon(560, 690, 1.1) + loon(600, 702, 0.9) + shade("g");
+  // motion: loons swimming, a flock crossing the sky, sparkles on the water
+  let fx = "";
+  for (let i = 0; i < 36; i++) {
+    const x = 370 + r() * 200 + (r() - 0.5) * 120, y = 575 + Math.pow(r(), 1.3) * 160, w = 6 + r() * 22;
+    fx += `<line x1="${f(x)}" y1="${f(y)}" x2="${f(x + w)}" y2="${f(y)}" stroke="#fffbeb" stroke-width="1.2" stroke-linecap="round" class="fx-twinkle" style="--d:${f(1.6 + r() * 2.4)}s;--dl:-${f(r() * 4)}s"/>`;
+  }
+  const swim = (x: number, y: number, k: number, d: number, dl: number) =>
+    `<g transform="translate(${x} ${y})"><g class="fx-swim" style="--d:${d}s;--dl:-${dl}s;--dx:-90px"><g class="fx-bob" style="--d:3.2s;--b:1px">${loon(0, 0, k)}<path d="M18 4 L48 -2 M18 5 L50 10" stroke="#ecfeff" stroke-width=".7" opacity=".35"/></g></g></g>`;
+  fx += swim(560, 690, 1.1, 48, 4) + swim(604, 703, 0.9, 52, 0);
+  let birds = "";
+  [[0, 0], [-22, -10], [-22, 12], [-44, -18], [-44, 22]].forEach(([dx, dy], i) => (birds += bird(dx, 170 + dy, 0.8, "#3b2f63", 0.9 + i * 0.07)));
+  fx += flock(birds, 36, 10);
+  return { bg: s + up + near + lake + rocks, fx: fx + shade("g") };
 }
 
 // ── 3. Autumn forest hills in morning haze ───────────────────────────────
@@ -218,18 +253,18 @@ function autumn() {
     <filter id="u-b2"><feGaussianBlur stdDeviation="1.2"/></filter>
   </defs><rect width="${W}" height="${H}" fill="url(#u-sky)"/>`;
   s += `<circle cx="160" cy="170" r="110" fill="#fff" opacity=".55" filter="url(#u-b14)"/><circle cx="160" cy="170" r="36" fill="#fffbeb"/>`;
-  // soft clouds
+  let fx = "";
+  // soft clouds, drifting
   for (let i = 0; i < 6; i++) {
     const x = 120 + r() * 600, y = 80 + r() * 160;
     let c = "";
     for (let k = 0; k < 6; k++) c += `<circle cx="${f(x + k * 22)}" cy="${f(y - Math.sin((k / 5) * Math.PI) * 18)}" r="${f(18 + r() * 14)}"/>`;
-    s += `<g fill="#fff" opacity=".85">${c}</g>`;
+    fx += `<g class="fx-drift" style="--d:${f(24 + r() * 16)}s;--dl:-${f(r() * 20)}s;--dx:${f(30 + r() * 40)}px"><g fill="#fff" opacity=".85">${c}</g></g>`;
   }
   // geese
-  for (let i = 0; i < 13; i++) {
-    const x = 520 + Math.abs(i - 6) * 16, y = 150 + (i - 6) * 9 + (i > 6 ? 0 : 0);
-    s += `<path d="M${x} ${y} q5 -5 10 0 q5 -5 10 0" fill="none" stroke="#1e293b" stroke-width="1.6" stroke-linecap="round"/>`;
-  }
+  let geese = "";
+  for (let i = 0; i < 13; i++) geese += bird(-Math.abs(i - 6) * 16, 200 + (i - 6) * 9, 0.85, "#1e293b", 1.1 + (i % 3) * 0.08);
+  const geeseFx = flock(geese, 42, 14, -60, 1000);
   // blue mountains
   s += `<path d="${ridgePath(ridge(r, 96, 360, 0.56, 140), H)}" fill="#7aa5c4"/>`;
   s += `<path d="${ridgePath(ridge(r, 96, 400, 0.55, 110), H)}" fill="#5a86a8"/>`;
@@ -269,11 +304,12 @@ function autumn() {
   });
   // drifting leaves in the foreground
   const leaf = "M0 -10 L2 -4 L7 -6 L5 -1 L10 0 L4 3 L5 8 L0 5 L-5 8 L-4 3 L-10 0 L-5 -1 L-7 -6 L-2 -4Z";
-  for (let i = 0; i < 16; i++) {
-    const x = r() * W, y = 200 + r() * 520;
-    s += `<path d="${leaf}" transform="translate(${f(x)} ${f(y)}) rotate(${f(r() * 360)}) scale(${f(0.8 + r() * 1.2)})" fill="${palette[2 + Math.floor(r() * 5)]}" opacity=".9"/>`;
+  for (let i = 0; i < 18; i++) {
+    const x = r() * W, k = 0.8 + r() * 1.2, d = 11 + r() * 9;
+    // each leaf falls the full height, swaying and spinning; negative delays spread them out
+    fx += `<g transform="translate(${f(x)} 0)"><g class="fx-fall" style="--d:${f(d)}s;--dl:-${f(r() * d)}s;--dx:${f((r() - 0.5) * 160)}px"><g class="fx-sway" style="--d:${f(2.5 + r() * 2)}s;--dl:-${f(r() * 3)}s"><path d="${leaf}" transform="scale(${f(k)})" fill="${palette[2 + Math.floor(r() * 5)]}" opacity=".92"/></g></g></g>`;
   }
-  return s + shade("u");
+  return { bg: s, fx: fx + geeseFx + shade("u") };
 }
 
 // ── 4. Winter night snowfall ──────────────────────────────────────
@@ -285,8 +321,6 @@ function winter() {
     <radialGradient id="w-moon" cx=".45" cy=".4" r=".6"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dbeafe"/></radialGradient>
     <radialGradient id="w-warm" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fcd34d" stop-opacity=".7"/><stop offset="1" stop-color="#fcd34d" stop-opacity="0"/></radialGradient>
     <filter id="w-b20" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="20"/></filter>
-    <filter id="w-b1"><feGaussianBlur stdDeviation="1"/></filter>
-    <filter id="w-b6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
   </defs><rect width="${W}" height="${H}" fill="url(#w-sky)"/>`;
   for (let i = 0; i < 260; i++) s += `<circle cx="${f(r() * W)}" cy="${f(r() * 420)}" r="${f(0.3 + r() * 0.9)}" fill="#fff" opacity="${f(0.2 + r() * 0.7)}"/>`;
   s += `<circle cx="590" cy="170" r="140" fill="#dbeafe" opacity=".18" filter="url(#w-b20)"/><circle cx="590" cy="170" r="48" fill="url(#w-moon)"/>`;
@@ -317,19 +351,27 @@ function winter() {
     <rect x="-28" y="-22" width="16" height="14" fill="#fcd34d"/><rect x="12" y="-22" width="16" height="14" fill="#fbbf24"/>
     <line x1="-20" y1="-22" x2="-20" y2="-8" stroke="#3b2a1e" stroke-width="1.5"/><line x1="20" y1="-22" x2="20" y2="-8" stroke="#3b2a1e" stroke-width="1.5"/>
     <rect x="-6" y="-14" width="12" height="24" fill="#2a1c12"/>
-    ${[0, 1, 2, 3, 4].map((k) => `<circle cx="${f(26 + k * 9)}" cy="${f(-86 - k * 18)}" r="${f(6 + k * 3)}" fill="#e2e8f0" opacity="${f(0.35 - k * 0.05)}" filter="url(#w-b6)"/>`).join("")}
   </g>`;
+  // motion: chimney smoke, flickering windows and three depths of falling snow
+  let fx = `<defs><radialGradient id="wfx-puff"><stop offset="0" stop-color="#e2e8f0" stop-opacity=".55"/><stop offset="1" stop-color="#e2e8f0" stop-opacity="0"/></radialGradient></defs><g transform="translate(560 702)">`;
+  for (let k = 0; k < 6; k++) fx += `<circle cx="23" cy="-78" r="12" fill="url(#wfx-puff)" class="fx-smoke" style="--d:6s;--dl:-${k}s"/>`;
+  fx += `<rect x="-28" y="-22" width="16" height="14" fill="#fef3c7" class="fx-flicker" style="--d:2.6s"/><rect x="12" y="-22" width="16" height="14" fill="#fef3c7" class="fx-flicker" style="--d:3.4s;--dl:-1s"/></g>`;
   // footprints leading to the cabin
   for (let i = 0; i < 14; i++) {
     const t = i / 13, x = 180 + t * 360 + (i % 2 ? 6 : -6), y = 880 - t * 160;
     s += `<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(4 - t * 2)}" ry="${f(2.2 - t)}" fill="#9fb3dc"/>`;
   }
   // falling snow, three depths
-  for (let i = 0; i < 520; i++) {
-    const big = r() < 0.12;
-    s += `<circle cx="${f(r() * W)}" cy="${f(r() * H)}" r="${f(big ? 2.2 + r() * 2 : 0.6 + r() * 1.2)}" fill="#fff" opacity="${f(big ? 0.55 : 0.3 + r() * 0.5)}" ${big ? 'filter="url(#w-b1)"' : ""}/>`;
-  }
-  return s + shade("w");
+  ([[150, 0.6, 1.2, 0.45, 60], [100, 1.2, 1.4, 0.6, 38], [40, 2.4, 2, 0.6, 24]] as const).forEach(([n, r0, rr, op, d]) => {
+    let flakes = "";
+    for (let i = 0; i < n; i++) {
+      const x = r() * W, y = r() * H, rad = f(r0 + r() * rr), o = f(op * (0.6 + r() * 0.4));
+      // each flake is drawn twice, one screen apart, so the layer loops seamlessly
+      flakes += `<circle cx="${f(x)}" cy="${f(y)}" r="${rad}" opacity="${o}"/><circle cx="${f(x)}" cy="${f(y - H)}" r="${rad}" opacity="${o}"/>`;
+    }
+    fx += `<g class="fx-sway-x" style="--d:${f(d / 5)}s;--dx:${f(d / 2)}px"><g class="fx-snow" fill="#fff" style="--d:${d}s">${flakes}</g></g>`;
+  });
+  return { bg: s, fx: fx + shade("w") };
 }
 
 // ── 5. Prairie at golden hour ─────────────────────────────────────
@@ -362,10 +404,9 @@ function prairie() {
   // low sun
   s += `<circle cx="400" cy="${horizon}" r="230" fill="url(#p-sun)"/><circle cx="400" cy="${horizon}" r="44" fill="#fffbeb"/>`;
   // swallows
-  for (let i = 0; i < 7; i++) {
-    const x = 60 + r() * 220, y = 450 + r() * 70, k = 0.6 + r() * 0.6;
-    s += `<path d="M${f(x)} ${f(y)} q${f(7 * k)} ${f(-5 * k)} ${f(13 * k)} ${f(-2 * k)} q${f(-6 * k)} ${f(1 * k)} ${f(-13 * k)} ${f(5 * k)} q${f(-7 * k)} ${f(-4 * k)} ${f(-13 * k)} ${f(-2 * k)} q${f(6 * k)} ${f(-3 * k)} ${f(13 * k)} ${f(-1 * k)}Z" fill="#2e1065"/>`;
-  }
+  let swallows = "";
+  for (let i = 0; i < 7; i++) swallows += bird(r() * 220, 450 + r() * 70, 0.6 + r() * 0.5, "#2e1065", 0.45 + r() * 0.2);
+  let fx = flock(swallows, 30, 6, -300, 900);
   // distant hills, canola strip and field
   s += `<path d="${ridgePath(ridge(r, 64, horizon - 8, 0.5, 18), H)}" fill="#7c2d6b" opacity=".85"/>`;
   s += `<rect y="${horizon}" width="${W}" height="${H - horizon}" fill="url(#p-field)"/>`;
@@ -375,6 +416,8 @@ function prairie() {
   s += `<g transform="translate(640 ${horizon + 6})"><path d="M-3 0 L-2 -38 L-12 -54 L-1 -44 L0 -62 L2 -44 L14 -56 L3 -36 L4 0Z" fill="#2a0f2f"/>${Array.from({ length: 16 }, () => `<circle cx="${f((r() - 0.5) * 70)}" cy="${f(-60 - r() * 40)}" r="${f(12 + r() * 12)}" fill="#2a0f2f"/>`).join("")}</g>`;
   // wheat: thousands of stalks, larger toward the viewer
   let wheat = "";
+  // the tallest stalks sway in the wind, in three bands that move slightly out of step
+  const sway = ["", "", ""];
   for (let i = 0; i < 2200; i++) {
     const t = Math.pow(r(), 1.6);
     const y = horizon + 24 + t * (H - horizon - 10);
@@ -382,20 +425,72 @@ function prairie() {
     const h = 6 + t * 70;
     const lean = (r() - 0.3) * h * 0.25;
     const col = mix("#fde68a", "#92400e", Math.min(1, t * 0.9 + r() * 0.25));
-    wheat += `<path d="M${f(x)} ${f(y)} q${f(lean * 0.3)} ${f(-h * 0.5)} ${f(lean)} ${f(-h)}" fill="none" stroke="${col}" stroke-width="${f(0.5 + t * 1.4)}" opacity="${f(0.55 + t * 0.4)}"/>`;
-    if (t > 0.25) wheat += `<ellipse cx="${f(x + lean)}" cy="${f(y - h)}" rx="${f(1 + t * 2.2)}" ry="${f(3 + t * 6)}" transform="rotate(${f((lean / h) * 60)} ${f(x + lean)} ${f(y - h)})" fill="${mix(col, "#fef3c7", 0.25)}"/>`;
+    let st = `<path d="M${f(x)} ${f(y)} q${f(lean * 0.3)} ${f(-h * 0.5)} ${f(lean)} ${f(-h)}" fill="none" stroke="${col}" stroke-width="${f(0.5 + t * 1.4)}" opacity="${f(0.55 + t * 0.4)}"/>`;
+    if (t > 0.25) st += `<ellipse cx="${f(x + lean)}" cy="${f(y - h)}" rx="${f(1 + t * 2.2)}" ry="${f(3 + t * 6)}" transform="rotate(${f((lean / h) * 60)} ${f(x + lean)} ${f(y - h)})" fill="${mix(col, "#fef3c7", 0.25)}"/>`;
+    if (t > 0.5) sway[Math.floor(r() * 3)] += st;
+    else wheat += st;
   }
   s += wheat;
+
   // fireflies of pollen in the light
-  for (let i = 0; i < 60; i++) s += `<circle cx="${f(200 + r() * 400)}" cy="${f(horizon - 40 + r() * 200)}" r="${f(0.8 + r() * 1.6)}" fill="#fef3c7" opacity="${f(0.3 + r() * 0.6)}"/>`;
-  return s + shade("p");
+  for (let i = 0; i < 60; i++) {
+    fx += `<circle cx="${f(200 + r() * 400)}" cy="${f(horizon - 40 + r() * 200)}" r="${f(0.8 + r() * 1.6)}" fill="#fef3c7" class="fx-float" style="--d:${f(5 + r() * 5)}s;--dl:-${f(r() * 10)}s;--dx:${f((r() - 0.5) * 40)}px;--o:${f(0.3 + r() * 0.6)}"/>`;
+  }
+  return { bg: s, fx: fx + shade("p"), wind: sway };
 }
 
 export interface Scene {
   id: string;
   name: string;
-  render: () => string;
+  /**
+   * bg is the still painting; fx holds the moving pieces, drawn on top in the same 800×900 space.
+   * wind layers are separate full-size images that sway as a whole (cheap for many small shapes).
+   */
+  render: () => { bg: string; fx: string; wind?: string[] };
 }
+
+/** Keyframes for the moving pieces. Animations pause outside the active slide and stop for reduced motion. */
+export const SCENE_FX_CSS = `
+.scene-fx *{animation-duration:var(--d,6s);animation-delay:var(--dl,0s);animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+.scene-fx.fx-off *{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.scene-fx *{animation:none!important}}
+.fx-flap{animation-name:fx-flap;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes fx-flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(-.45)}}
+.fx-fly{animation-name:fx-fly;animation-timing-function:linear!important}
+@keyframes fx-fly{0%{transform:translate(var(--from),0)}50%{transform:translate(calc((var(--from) + var(--to)) / 2),-14px)}100%{transform:translate(var(--to),0)}}
+.fx-fall{animation-name:fx-fall;animation-timing-function:linear!important}
+@keyframes fx-fall{from{transform:translate(0,-40px)}to{transform:translate(var(--dx),940px)}}
+.fx-sway{animation-name:fx-sway;animation-direction:alternate}
+@keyframes fx-sway{from{transform:translateX(-14px) rotate(-40deg)}to{transform:translateX(14px) rotate(50deg)}}
+.fx-sway-x{animation-name:fx-sway-x;animation-direction:alternate}
+@keyframes fx-sway-x{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+.fx-snow{animation-name:fx-snow;animation-timing-function:linear!important}
+@keyframes fx-snow{from{transform:translateY(0)}to{transform:translateY(900px)}}
+.fx-drift{animation-name:fx-drift;animation-direction:alternate}
+@keyframes fx-drift{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+.fx-bob{animation-name:fx-bob}
+@keyframes fx-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(var(--b,2px))}}
+.fx-swim{animation-name:fx-swim}
+@keyframes fx-swim{0%{transform:translateX(0) scaleX(1)}47%{transform:translateX(var(--dx)) scaleX(1)}50%{transform:translateX(var(--dx)) scaleX(-1)}97%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}
+.fx-twinkle{animation-name:fx-twinkle}
+@keyframes fx-twinkle{0%,100%{opacity:var(--o,.9)}50%{opacity:.1}}
+.fx-pulse{animation-name:fx-pulse}
+@keyframes fx-pulse{0%,100%{opacity:.25}50%{opacity:.85}}
+.fx-shoot{animation-name:fx-shoot;animation-timing-function:linear!important;opacity:0}
+@keyframes fx-shoot{0%{transform:translate(0,0);opacity:0}2%{opacity:1}9%{transform:translate(-300px,120px);opacity:0}100%{transform:translate(-300px,120px);opacity:0}}
+.fx-ripple{animation-name:fx-ripple;animation-timing-function:ease-out!important;transform-box:fill-box;transform-origin:center;opacity:0}
+@keyframes fx-ripple{0%{transform:scale(.6);opacity:.45}100%{transform:scale(1.8);opacity:0}}
+.fx-smoke{animation-name:fx-smoke;animation-timing-function:ease-out!important;transform-box:fill-box;transform-origin:center;opacity:0}
+@keyframes fx-smoke{0%{transform:translate(0,0) scale(.5);opacity:.9}100%{transform:translate(26px,-110px) scale(2.6);opacity:0}}
+.fx-flicker{animation-name:fx-flicker}
+@keyframes fx-flicker{0%,100%{opacity:.15}30%{opacity:.45}60%{opacity:.05}80%{opacity:.35}}
+.fx-wind{animation:fx-wind 6s ease-in-out var(--dl,0s) infinite;transform-origin:50% 100%;will-change:transform}
+.fx-off .fx-wind{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.fx-wind{animation:none}}
+@keyframes fx-wind{0%,100%{transform:skewX(0deg)}50%{transform:skewX(-2.5deg)}}
+.fx-float{animation-name:fx-float;opacity:var(--o,.6)}
+@keyframes fx-float{0%{transform:translate(0,0);opacity:0}30%{opacity:var(--o,.6)}100%{transform:translate(var(--dx),-50px);opacity:0}}
+`;
 
 export const SCENES: Scene[] = [
   { id: "aurora", name: "Northern lights", render: aurora },
