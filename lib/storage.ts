@@ -22,6 +22,9 @@ function read<T>(key: string, fallback: T): T {
   }
 }
 
+const writeListeners = new Set<(key: string) => void>();
+let silent = false;
+
 function write<T>(key: string, val: T) {
   cache.set(key, val);
   try {
@@ -30,6 +33,46 @@ function write<T>(key: string, val: T) {
     /* storage full / private mode – keep in memory */
   }
   listeners.forEach((l) => l());
+  if (!silent) writeListeners.forEach((l) => l(key));
+}
+
+// ───────────── Account sync hooks ─────────────
+// lib/account.tsx uses these to mirror progress to the signed-in user's cloud account.
+
+/** Called with the key after every local change (not for changes applied from the cloud). */
+export function onLocalWrite(cb: (key: string) => void) {
+  writeListeners.add(cb);
+  return () => void writeListeners.delete(cb);
+}
+
+/** Keys worth syncing: everything except in-progress exam drafts. */
+export function syncableKeys(): string[] {
+  const keys: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i)!;
+    if (k.startsWith(PREFIX) && !k.startsWith(PREFIX + "draft:")) keys.push(k.slice(PREFIX.length));
+  }
+  return keys;
+}
+
+/** Applies values that came from the cloud without echoing them back as local changes. */
+export function applyRemote(values: Record<string, unknown>) {
+  silent = true;
+  try {
+    Object.entries(values).forEach(([k, v]) => write(k, v));
+  } finally {
+    silent = false;
+  }
+}
+
+/** Clears local progress without notifying sync (used on sign-out / account switch). */
+export function clearLocal() {
+  silent = true;
+  try {
+    resetAll();
+  } finally {
+    silent = false;
+  }
 }
 
 function subscribe(cb: () => void) {
@@ -137,6 +180,7 @@ export function resetAll() {
   keys.forEach((k) => localStorage.removeItem(k));
   cache.clear();
   listeners.forEach((l) => l());
+  if (!silent) writeListeners.forEach((l) => l("*"));
 }
 
 // ───────────── IndexedDB (large blobs: speaking recordings) ─────────────

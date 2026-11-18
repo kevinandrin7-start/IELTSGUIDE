@@ -175,8 +175,16 @@ const KEY_STORE = "clb9-anthropic-key";
 export function getUserApiKey(): string {
   try { return localStorage.getItem(KEY_STORE) ?? ""; } catch { return ""; }
 }
-export function setUserApiKey(key: string) {
+const keyListeners = new Set<(key: string) => void>();
+/** Lets the account layer save key changes to the signed-in user's profile. */
+export function onApiKeyChange(cb: (key: string) => void) {
+  keyListeners.add(cb);
+  return () => void keyListeners.delete(cb);
+}
+/** Saves (or with "" removes) the key on this device; `notify: false` skips the account sync. */
+export function setUserApiKey(key: string, notify = true) {
   try { if (key) localStorage.setItem(KEY_STORE, key); else localStorage.removeItem(KEY_STORE); } catch { /* storage blocked */ }
+  if (notify) keyListeners.forEach((l) => l(key));
 }
 
 /**
